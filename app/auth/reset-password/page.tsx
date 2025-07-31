@@ -17,10 +17,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { adminRegisterSchema, AdminRegisterSchema } from "@/lib/schema";
+import { resetPassword, ResetPasswords } from "@/lib/schema";
 import { toast } from "sonner"
 
-export default function resetPassword() {
+export default function ResetPassword() {
 
   const route = useRouter();
   const [loading, setLoading] = useState(false);
@@ -28,6 +28,7 @@ export default function resetPassword() {
   const [token, setToken] = useState<boolean | null>(null);
   
   const urlToken = searchParams.get("ResetPasswordToken");
+
   useEffect(() => {
     
     const checkToken = async () => {
@@ -48,13 +49,12 @@ export default function resetPassword() {
   }, [searchParams])
 
 
-  const { register, handleSubmit, formState: { errors } } = useForm<AdminRegisterSchema>({
-    resolver: zodResolver(adminRegisterSchema),
+  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswords>({
+    resolver: zodResolver(resetPassword),
   });
 
-  const onSubmit = async (formData: AdminRegisterSchema) => {
+  const onSubmit = async (formData: ResetPasswords) => {
     setLoading(true);
-
     try {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
@@ -66,6 +66,7 @@ export default function resetPassword() {
           password: formData.password
         }),
       });
+
 
       const data = await res.json();
       if (!res.ok) {
@@ -130,12 +131,12 @@ export default function resetPassword() {
             </CardContent>
             <CardFooter className="flex justify-between">
               {loading ? (
-                <Button variant="default" disabled>
+                <Button type="submit" variant="default" disabled>
                   <Loader2Icon className="animate-spin mr-2" />
-                  Changing Password...
+                  Reset Password...
                 </Button>
               ) : (
-                <Button variant="default">Change Password</Button>
+                <Button type="submit" variant="default">Reset Password</Button>
               )}
             </CardFooter>
           </>

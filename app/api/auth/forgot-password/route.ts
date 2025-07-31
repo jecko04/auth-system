@@ -10,13 +10,15 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: NextRequest) {
 
     const body = await request.json();
-    const { userId, email } = body;
+    const { email } = body;
 
-    const expiresIn = 5 * 60; 
-    const ResetPasswordToken = await encrypt({ userId, email }, expiresIn);
-
-    console.log("✅ Session Token created successfully:");
     try {
+
+        const user = await getUserIdByEmail(email);
+        const userId = user.id;
+
+        const expiresIn = 5 * 60; 
+        const ResetPasswordToken = await encrypt({ userId, email }, expiresIn);
 
         const getEmail = await getUserByEmail(email);
         if (!getEmail) {
@@ -44,6 +46,16 @@ export async function getUserByEmail(email: string) {
   const conn = await pool.getConnection();
   try {
     const [row]: any = await conn.query("SELECT * FROM users WHERE email = ?", [email]);
+    return row.length > 0 ? row[0] : null;
+  } finally {
+    conn.release();
+  }
+}
+
+export async function getUserIdByEmail(email: string) {
+  const conn = await pool.getConnection();
+  try {
+    const [row]: any = await conn.query("SELECT id FROM users WHERE email = ?", [email]);
     return row.length > 0 ? row[0] : null;
   } finally {
     conn.release();

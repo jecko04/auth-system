@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import { adminLoginSchema, AdminLoginSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { HandMetal } from "lucide-react";
+import { HandMetal, Loader2Icon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getAuthCookie } from "./actions/cookies";
 import { toast } from "sonner";
@@ -121,9 +121,14 @@ export default function Home() {
               Forgot Password?
             </Link>
           </Button>
-          <Button variant="default">
-           Login
-          </Button>
+              {loading ? (
+                <Button type="submit" variant="default" disabled>
+                  <Loader2Icon className="animate-spin mr-2" />
+                  Login...
+                </Button>
+              ) : (
+                <Button type="submit" variant="default">Login</Button>
+              )}
         </CardFooter>
       </Card>
     </form>
